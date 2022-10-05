@@ -18,7 +18,6 @@ export default class Manhattan {
 
     getDist(i, j) {
         var elem = this.table.table[i][j];
-        var achou = false;
 
         var pos = this.base.search(elem);
 

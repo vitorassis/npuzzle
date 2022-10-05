@@ -48,28 +48,29 @@ export default class Puzzle {
 
         var st = this.metodo.getStructure();
         this.track = new Stack();
-        st.push(this.raiz);
 
         var atual = this.raiz;
         this.track.push(atual.table);
 
+        var i = 0;
+        debugger;
         do {
             console.log(st);
 
-            if(atual.table.estadosPossiveis.length == 0)
+            if (atual.table.estadosPossiveis.length < 2)
                 atual.table.calculatePossibilidades();
-            
-            for (var i = 0; i < atual.table.estadosPossiveis.length && !atual.table.estadosPossiveis[i].final; i++) {
+            for (i = 0; i < atual.table.estadosPossiveis.length && !atual.final; i++) {
                 st.push(new No(atual.table.estadosPossiveis[i], this.base, this.avaliacao));
             }
-            var estado = this.metodo.getEstado(this.base, this.avaliacao, st);
-            while (!this.track.isEmpty() && !this.track.top().isEstadoPossivel(estado.table.guid)) {
-                debugger; this.track.pop();
-            }
-            this.track.push(estado.table);
 
-            atual = estado;
+                var estado = this.metodo.getEstado(this.base, this.avaliacao, st);
+                while (!this.track.isEmpty() && !this.track.top().isEstadoPossivel(estado.table.guid)) 
+                    this.track.pop();
+                this.track.push(estado.table);
+
+                atual = estado;
         } while (!st.isEmpty() && !atual.final);
+        this.track.push(atual);
 
         console.log(this.raiz);
 
