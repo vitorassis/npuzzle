@@ -4,9 +4,9 @@ export default class Manhattan {
     base;
     table;
 
-    getAvaliacao(table, base) {
-        this.base = base;
+    getAvaliacao(table) {
         this.table = table;
+  //      debugger;
 
         var sum = 0;
         for (var i = 0; i < this.table.tam; i++)
@@ -17,10 +17,17 @@ export default class Manhattan {
     }
 
     getDist(i, j) {
-        var elem = this.table.table[i][j];
+        if (i < this.base.tam && j < this.base.tam) {
+            var elem = this.table.table[i][j];
 
-        var pos = this.base.search(elem);
+            var pos = this.base.search(elem);
 
-        return Math.abs(pos.i - i) + Math.abs(pos.j - j);
+            return Math.abs(pos.i - i) + Math.abs(pos.j - j);
+        }
+        return 0;
+    }
+
+    constructor(base) {
+        this.base = base;
     }
 }

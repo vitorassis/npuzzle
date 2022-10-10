@@ -1,11 +1,7 @@
-import No from './No';
-import Table from './Table';
-import PecasFora from './Avaliacao/PecasFora';
-import Manhattan from './Avaliacao/Manhattan';
 import Astar from './Metodo/Astar';
 import CegaLargura from './Metodo/CegaLargura';
 import CegaProfundidade from './Metodo/CegaProfundidade';
-import Stack from './Util/Stack';
+import getMetodoAvaliacao from './Avaliacao/AvalicaoHandler';
 
 export default class Puzzle {
     track;
@@ -13,19 +9,15 @@ export default class Puzzle {
     avaliacao;
     metodo;
     resolvido;
+    visitados;
+    inicio;
 
     constructor(base, avaliacao, metodo, moves, niveis) {
         this.resolvido = false;
         this.base = base;
+        this.visitados = [];
 
-        switch (avaliacao) {
-            case 'p':
-                this.avaliacao = new PecasFora();
-                break;
-            case 'm':
-                this.avaliacao = new Manhattan();
-                break;
-        }
+        this.avaliacao = getMetodoAvaliacao(avaliacao);
 
         switch (metodo) {
             case 'a':
@@ -41,39 +33,11 @@ export default class Puzzle {
         }
         this.metodo.setNiveis(niveis);
 
-        this.raiz = new No(base.shuffle(moves), base, this.avaliacao);
+        this.inicio = base.shuffle(moves);
     }
 
     resolver() {
-
-        var st = this.metodo.getStructure();
-        this.track = new Stack();
-
-        var atual = this.raiz;
-        this.track.push(atual.table);
-
-        var i = 0;
-        debugger;
-        do {
-            console.log(st);
-
-            if (atual.table.estadosPossiveis.length < 2)
-                atual.table.calculatePossibilidades();
-            for (i = 0; i < atual.table.estadosPossiveis.length && !atual.final; i++) {
-                st.push(new No(atual.table.estadosPossiveis[i], this.base, this.avaliacao));
-            }
-
-                var estado = this.metodo.getEstado(this.base, this.avaliacao, st);
-                while (!this.track.isEmpty() && !this.track.top().isEstadoPossivel(estado.table.guid)) 
-                    this.track.pop();
-                this.track.push(estado.table);
-
-                atual = estado;
-        } while (!st.isEmpty() && !atual.final);
-        this.track.push(atual);
-
-        console.log(this.raiz);
-
+        this.track = this.metodo.resolver(this);
         this.resolvido = true;
     }
 
@@ -82,12 +46,19 @@ export default class Puzzle {
     }
 
     getTrack() {
-        var track = [];
-        var cp = JSON.parse(JSON.stringify(this.track));
+        return this.track;
+    }
 
-        for (var i = 0; i < cp.s.length; i++)
-            track.push(cp.s[i]);
+    visitado(_tb) {
+        
+        function start(o, tb) {
+            var igual = true;
+            for (var i = 0; i < o.length && igual; i++)
+                for (var j = 0; j < o.length && igual; j++)
+                    igual = o[i][j] == tb[i][j];
 
-        return track;
+            return igual;
+        }
+        return this.visitados.find(start.bind(this, _tb));
     }
 }

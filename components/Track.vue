@@ -1,7 +1,7 @@
 <template>
     <div class="container" v-if="store.puzzle && store.puzzle.resolvido">
         <h4> Resolução</h4>
-        <div  v-for="(item, index) in store.puzzle.getTrack()" :key="index" >
+        <div  v-for="(item, index) in store.puzzle.track.s" :key="index" >
             <Table :N="item.tam" :table="item.table"/>
             <br><br>
         </div>

@@ -10,19 +10,23 @@ export default class Astar{
     }
 
     getEstado(base, avaliacao, st){
-        debugger;
         this.avaliacao = avaliacao;
         this.base = base;
         if(this.niveis == 1){
             var menor = this.getSoma(st.q[0].table);
             var tabMenor = st.q[0];
-
-            for(var i=0; i<st.q.length; i++){
-                if(this.getSoma(st.q[i].table) < menor){
-                    menor = this.getSoma(st.q[i].table);
-                    tabMenor = st.q[i];
+            st.q.map(structure => {
+                if(this.getSoma(structure.table) < menor){
+                    menor = this.getSoma(structure.table);
+                    tabMenor = structure;
                 }
-            }
+            })
+            // for(var i=0; i<st.q.length; i++){
+            //     if(this.getSoma(st.q[i].table) < menor){
+            //         menor = this.getSoma(st.q[i].table);
+            //         tabMenor = st.q[i];
+            //     }
+            // }
         }
         return tabMenor;
     }

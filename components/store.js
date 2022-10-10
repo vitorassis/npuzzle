@@ -61,10 +61,10 @@ export const store = reactive({
     },
     embaralhar(){
         this.shuffledTable = null;
-        this.base = new Table({tam: this.N, table: this.table});
+        this.base = new Table({tam: this.N, table: this.table, avaliacao: this.avaliacao});
 
         this.puzzle = new Puzzle(this.base, this.avaliacao, this.busca, this.movimentos, this.niveis);
 
-        this.shuffledTable = this.puzzle.raiz.table;
+        this.shuffledTable = this.puzzle.inicio;
     }
 })

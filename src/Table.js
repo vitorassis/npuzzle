@@ -1,3 +1,4 @@
+import getMetodoAvaliacao from "./Avaliacao/AvalicaoHandler";
 import guid from "./Util/GUID";
 
 export default class Table {
@@ -7,10 +8,16 @@ export default class Table {
     tam = 3;
     lacuna;
     custo = 0;
+    _avaliacao;
 
     constructor(obj = { table: undefined, tam: undefined }, passo = false) {
 
-        //debugger;
+        this.guid = obj.guid ? (passo ? guid() : obj.guid) : guid();
+        if (typeof obj.avaliacao == 'string')
+            this.avaliacao = getMetodoAvaliacao(obj.avaliacao, this);
+        else
+            this.avaliacao = obj.avaliacao;
+
         if (obj.lacuna) {
             this.tam = obj.tam;
             this.lacuna = { i: obj.lacuna.i, j: obj.lacuna.j };
@@ -25,7 +32,6 @@ export default class Table {
                 this.estadosPossiveis[i] = new Table(obj.estadosPossiveis[i]);
             }
             this.custo = passo ? obj.custo + 1 : obj.custo;
-
         } else {
 
             this.table = obj.table;
@@ -35,28 +41,30 @@ export default class Table {
 
             this.lacuna = this.search(0);
 
-            this.custo = obj.custo ? (passo ? obj.custo+1 : obj.custo) : 0;
+            this.custo = obj.custo ? (passo ? obj.custo + 1 : obj.custo) : 0;
 
-            //     debugger;
             this.calculatePossibilidades();
         }
-
-        this.guid = obj.guid ? (passo ? guid() : obj.guid) : guid();
-
+        
+        this._avaliacao = this.getAvaliacao(this);
     }
 
-    isEstadoPossivel(guid){
-        if(!this.estadosPossiveis)
+    getAvaliacao(){
+        var av = this.avaliacao.getAvaliacao(this);
+        this.final = av == 0;
+        return av;
+    }
+
+    isEstadoPossivel(guid) {
+        if (!this.estadosPossiveis)
             return false;
-    //  /   debugger;
         var found = this.estadosPossiveis.filter(table => table.guid == guid);
-        return found.length> 0;
+        return found.length > 0;
     }
 
     calculatePossibilidades() {
         this.estadosPossiveis = [];
 
-    //    debugger;
 
         if (this.lacuna.i > 0)
             this.estadosPossiveis.push(this.move(this.lacuna.i - 1, this.lacuna.j));
@@ -77,7 +85,7 @@ export default class Table {
             novo.table[i][j] = this.table[novo.lacuna.i][novo.lacuna.j];
             novo.lacuna = { i: i, j: j };
         }
-
+        novo._avaliacao = novo.getAvaliacao();
         return novo;
     }
 
@@ -91,7 +99,7 @@ export default class Table {
         var achou = false;
 
         for (_i; _i < this.tam && !achou; _i++)
-            for (_j; _j < this.tam && !achou; _j++)
+            for (_j=0; _j < this.tam && !achou; _j++)
                 achou = this.table[_i][_j] == elem;
 
         return { i: _i - 1, j: _j - 1 };
@@ -107,6 +115,7 @@ export default class Table {
             cont++;
         }
         novo.custo = 0;
+        novo._avaliacao = novo.getAvaliacao();
 
         return novo;
     }
